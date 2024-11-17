@@ -46,14 +46,19 @@ class Reciever():
         return ball_x,ball_y,player_y
 window=display.set_mode((1280,720))
 background=transform.scale(image.load('sources/0b113edf6db30d09a5dff8cca6bfc813.png'),(1280,720))
-rocketka_number_one=Player(38,285)
-rocketka_number_two=Player(1210,285)
 ball=Ball(605, 325)
 reciever = Reciever()
 igrovoi_cikl=True
 clock=time.Clock()
 display.set_caption('Игра в пинг-понг онлайн')
 connection=Connection()
+ismain=connection.recieve_data()
+if ismain==1:
+    rocketka_number_one=Player(38,285)
+    rocketka_number_two=Player(1210,285)
+else:
+    rocketka_number_one=Player(1210,285)
+    rocketka_number_two=Player(38,285)
 while igrovoi_cikl:
     window.blit(background,(0,0))
     rocketka_number_one.reset()
