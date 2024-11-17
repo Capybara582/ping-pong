@@ -1,9 +1,9 @@
 import socket
 class Connection():
-    # host='31.204.178.207'
-    # port=8020
-    host='127.0.0.1'
-    port=18083
+    host='31.204.178.207'
+    port=8020
+    # host='127.0.0.1'
+    # port=18083
     def __init__(self):
         self.s=socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM)
         self.s.connect((self.host, self.port))

@@ -53,10 +53,10 @@ clock=time.Clock()
 display.set_caption('Игра в пинг-понг онлайн')
 connection=Connection()
 ismain=connection.recieve_data()
-if ismain==1:
+if ismain.decode()=='1':
     rocketka_number_one=Player(38,285)
     rocketka_number_two=Player(1210,285)
-else:
+elif ismain.decode()=='0':
     rocketka_number_one=Player(1210,285)
     rocketka_number_two=Player(38,285)
 while igrovoi_cikl:

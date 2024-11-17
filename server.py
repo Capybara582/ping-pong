@@ -8,10 +8,10 @@ with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as s:
     s.bind((host,port))
     s.listen()
     connection1,address1=s.accept()
-    connection1.sendall(1)
+    connection1.sendall('1'.encode())
     print('Соединение:', address1)
     connection2,address2=s.accept()
-    connection1.sendall(0)
+    connection1.sendall('0'.encode())
     print('Соединение:', address2)
     while True: 
         data1=connection1.recv(1024)
