@@ -2,8 +2,8 @@ import socket
 host='127.0.0.1'
 port=18083
 ball_cords={"x":605,'y':325}
-ball_speed_x=2
-ball_speed_y=2
+ball_speed_x=10
+ball_speed_y=10
 with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as s:
     s.bind((host,port))
     s.listen()
@@ -11,7 +11,7 @@ with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as s:
     connection1.sendall('1'.encode())
     print('Соединение:', address1)
     connection2,address2=s.accept()
-    connection1.sendall('0'.encode())
+    connection2.sendall('0'.encode())
     print('Соединение:', address2)
     while True: 
         data1=connection1.recv(1024)
