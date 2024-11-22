@@ -44,7 +44,10 @@ class Reciever():
         ball_x=int(new_data[1].split(',')[0][1:])
         ball_y=int(new_data[1].split(',')[1][1:])
         player_y=int(new_data[0][2:])
-        return ball_x,ball_y,player_y
+        point1=int(new_data[2][1:].split(',')[0])
+        point2=int(new_data[2][1:].split(',')[1])
+        return ball_x,ball_y,player_y,point1,point2
+        
 window=display.set_mode((1280,720))
 main_menu=transform.scale(image.load('sources/92984159339df76cd563ee8f8b44c368.jpg'),(1280,720))
 background=transform.scale(image.load('sources/0b113edf6db30d09a5dff8cca6bfc813.png'),(1280,720))
@@ -75,15 +78,17 @@ igrovoi_cikl=True
 clock=time.Clock()
 display.set_caption('Игра в пинг-понг онлайн')
 main_menu_flag=True
+online_game=False
 is_connected=False
 while igrovoi_cikl:
+
     if main_menu_flag:
         window.blit(main_menu,(0,0))
         window.blit(play_online,(80,150))
         window.blit(play_solo,(650,150))
         window.blit(settings,(150,450))
         window.blit(exitt,(700,450))
-    else:
+    elif online_game:
 
         if not is_connected:
             connection=Connection()
@@ -94,21 +99,26 @@ while igrovoi_cikl:
             elif ismain.decode()=='0':
                 rocketka_number_one=Player(1210,285)
                 rocketka_number_two=Player(38,285)
+            is_connected=True
         window.blit(background,(0,0))
         rocketka_number_one.reset()
         rocketka_number_two.reset()
         rocketka_number_one.move()
         ball.reset()
-        ball_x,ball_y,player_y=reciever.get_move()
+        ball_x,ball_y,player_y,point1,point2=reciever.get_move()
         rocketka_number_two.get_move(player_y)
+        points=main_font.render(f'{point1}:{point2}',1,(0,0,0))
+        window.blit(points,(590,10))
         ball.get_move(ball_x,ball_y)
     for i in event.get():
         if i.type==MOUSEBUTTONDOWN:
             mouse_x,mouse_y=i.pos
             if exitt_rect.collidepoint (mouse_x,mouse_y):
                 igrovoi_cikl=False
+
             if play_online_rect.collidepoint (mouse_x,mouse_y):
                 main_menu_flag=False
+                online_game=True
         if i.type==QUIT:
             igrovoi_cikl = False
             

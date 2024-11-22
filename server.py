@@ -1,9 +1,11 @@
 import socket
+from random import randint
 host='127.0.0.1'
 port=18083
 ball_cords={"x":605,'y':325}
 ball_speed_x=10
 ball_speed_y=10
+points={'point1':0,'point2':0}
 with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as s:
     s.bind((host,port))
     s.listen()
@@ -31,7 +33,19 @@ with socket.socket(family=socket.AF_INET, type=socket.SOCK_STREAM) as s:
             if ball_cords['y'] in range(rocket_y_two,rocket_y_two+150) or ball_cords['y']+70 in range(rocket_y_two,rocket_y_two+150):
                 ball_speed_x*=-1
         
+        if ball_cords['x']>1280:
+            points['point1']+=1
+            ball_cords={"x":605,'y':325}
+            ball_speed_x*=-1 if randint(0,1)==1 else 1
+            ball_speed_y*=-1 if randint(0,1)==1 else 1
+
+        if ball_cords['x']<-70:
+            points['point2']+=1
+            ball_cords={"x":605,'y':325}
+            ball_speed_x*=-1 if randint(0,1)==1 else 1
+            ball_speed_y*=-1 if randint(0,1)==1 else 1
+
         if not data1 and not data2:
             break
-        connection1.sendall(data2+f':x{ball_cords["x"]},y{ball_cords["y"]}'.encode())
-        connection2.sendall(data1+f':x{ball_cords["x"]},y{ball_cords["y"]}'.encode())
+        connection1.sendall(data2+f':x{ball_cords["x"]},y{ball_cords["y"]}:p{points["point1"]},{points["point2"]}'.encode())
+        connection2.sendall(data1+f':x{ball_cords["x"]},y{ball_cords["y"]}:p{points["point1"]},{points["point2"]}'.encode())
