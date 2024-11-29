@@ -1,7 +1,9 @@
 from pygame import *
 from client import Connection
+from random import randint
 font.init()
 data={'x':38,'y':285}
+points={'point1':0,'point2':0}
 class Player ():
     def __init__(self, x, y):
         self.y=y
@@ -10,6 +12,8 @@ class Player ():
         self.rect=self.image.get_rect()
         self.rect.x=x
         self.rect.y=y
+        self.speed_y=15
+        self.speed_ii_y=7
     def reset(self):
         window.blit(self.image,(self.rect.x,self.rect.y))
     def move(self):
@@ -21,12 +25,47 @@ class Player ():
             self.rect.y+=15
             data['y']+=15
         connection.send_data('ry'+str(data['y']))
+
+    def ofline_move(self):
+        keys=key.get_pressed()
+        if keys[K_UP] and self.rect.y>5:
+            self.rect.y-=15
+           
+        if keys[K_DOWN] and self.rect.y<565:
+            self.rect.y+=15
+            
+    def ii(self,y):
+        # хватит захватывать мир, пожалуйста
+        # хватит
+        # ХВАААААТИИИТ
+        if self.rect.y<=570 and self.rect.y>=0:
+            if self.rect.y<y:
+                self.rect.y+=self.speed_ii_y
+            if self.rect.y>y:
+                self.rect.y-=self.speed_ii_y
+            if randint(1,700)==1:
+                print('1')
+                
+                self.speed_ii_y=0
+            if current_time%100==0:
+                self.speed_ii_y=7
+                
+        if self.rect.y>570:
+            self.rect.y=570
+        if self.rect.y<0:
+            self.rect.y=0
+
+           
+
+
     def get_move(self,y):
         self.rect.y=y
 class Ball ():
     def __init__(self, x, y):
         self.y=y
         self.x=x
+        self.speed_x=7
+        self.speed_y=7
         self.image=transform.scale(image.load('sources/istockphoto.png'),(70, 70))
         self.rect=self.image.get_rect()
         self.rect.x=x
@@ -36,6 +75,12 @@ class Ball ():
     def get_move(self,x,y):
         self.rect.x=x
         self.rect.y=y
+
+    def move_offline(self):
+        self.rect.x+=self.speed_x
+        self.rect.y+=self.speed_y
+        if self.rect.y<0 or self.rect.y>650:
+            self.speed_y*=-1
 class Reciever():
     def get_move(self):
         new_data=connection.recieve_data()
@@ -72,14 +117,17 @@ settings_rect.y=450
 exitt_rect=exitt.get_rect()
 exitt_rect.x=700
 exitt_rect.y=450
-
+current_time=0
 reciever = Reciever()
 igrovoi_cikl=True
 clock=time.Clock()
 display.set_caption('Игра в пинг-понг онлайн')
 main_menu_flag=True
 online_game=False
+ofline_game=False
 is_connected=False
+rocketka_number_one=Player(1210,285)
+rocketka_number_two=Player(38,285)
 while igrovoi_cikl:
 
     if main_menu_flag:
@@ -110,6 +158,38 @@ while igrovoi_cikl:
         points=main_font.render(f'{point1}:{point2}',1,(0,0,0))
         window.blit(points,(590,10))
         ball.get_move(ball_x,ball_y)
+    
+    
+    
+    elif ofline_game:
+        current_time+=1
+        window.blit(background,(0,0))
+        rocketka_number_one.reset()
+        rocketka_number_two.reset()
+        points_text=main_font.render(f'{points["point1"]}:{points["point2"]}',1,(0,0,0))
+        window.blit(points_text,(590,10))
+        rocketka_number_two.ofline_move()
+        rocketka_number_one.ii(ball.rect.y)
+        ball.move_offline()
+        ball.reset()
+        if ball.rect.colliderect(rocketka_number_one.rect) or ball.rect.colliderect(rocketka_number_two.rect):
+            ball.speed_x*=-1
+            
+        if ball.rect.x>1280:
+            points['point1']+=1
+            ball.rect.x=605
+            ball.rect.y=325
+            ball.speed_x*=-1 if randint(0,1)==1 else 1
+            ball.speed_y*=-1 if randint(0,1)==1 else 1
+
+        if ball.rect.x<-70:
+            points['point2']+=1
+            ball.rect.x=605
+            ball.rect.y=325
+            ball.speed_x*=-1 if randint(0,1)==1 else 1
+            ball.speed_y*=-1 if randint(0,1)==1 else 1
+
+
     for i in event.get():
         if i.type==MOUSEBUTTONDOWN:
             mouse_x,mouse_y=i.pos
@@ -119,9 +199,14 @@ while igrovoi_cikl:
             if play_online_rect.collidepoint (mouse_x,mouse_y):
                 main_menu_flag=False
                 online_game=True
+
+            if play_solo_rect.collidepoint (mouse_x,mouse_y):
+                main_menu_flag=False
+                ofline_game=True
         if i.type==QUIT:
             igrovoi_cikl = False
             
             connection.close_connection()
+     
     clock.tick(60)
     display.update()
