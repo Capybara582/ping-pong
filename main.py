@@ -43,13 +43,28 @@ class Player ():
                 self.rect.y+=self.speed_ii_y
             if self.rect.y>y:
                 self.rect.y-=self.speed_ii_y
-            if randint(1,700)==1:
+            if randint(1,900)==1:
                 print('1')
                 
                 self.speed_ii_y=0
-            if current_time%100==0:
+            if current_time%350==0:
                 self.speed_ii_y=7
                 
+
+            if randint(1,500)==1:
+                print('2')
+                
+                self.speed_ii_y=2
+            
+
+
+            if randint(1,400)==1:
+                print('3')
+                
+                self.speed_ii_y*=-1
+            
+
+
         if self.rect.y>570:
             self.rect.y=570
         if self.rect.y<0:
@@ -126,8 +141,14 @@ main_menu_flag=True
 online_game=False
 ofline_game=False
 is_connected=False
+is_end_game=False
 rocketka_number_one=Player(1210,285)
 rocketka_number_two=Player(38,285)
+back_main_menu=main_font.render('Главное меню',1,(66, 114, 245))
+play_a_game=main_font.render('Играть еще раз',1,(66, 114, 245))
+back_main_menu_rect=back_main_menu.get_rect()
+play_a_game_rect=play_a_game.get_rect()
+
 while igrovoi_cikl:
 
     if main_menu_flag:
@@ -189,20 +210,56 @@ while igrovoi_cikl:
             ball.speed_x*=-1 if randint(0,1)==1 else 1
             ball.speed_y*=-1 if randint(0,1)==1 else 1
 
+        if points['point1']==3 or points['point2']==3:
+            if points['point1']>points['point2']:
+                exit_game_text='Вы выиграли'
+            else:
+                exit_game_text='Выиграл ИИ'
+            exit_game=main_font.render(exit_game_text,1,(66, 114, 245))
+            is_end_game=True
+            ofline_game=False
+            
+    elif is_end_game:
+        window.blit(background,(0,0))
+        window.blit(exit_game,(450,500))
+        window.blit(play_a_game,(150,150))
+        window.blit(back_main_menu,(150,300))
+        play_a_game_rect.x=150
+        play_a_game_rect.y=150
+        back_main_menu_rect.x=150
+        back_main_menu_rect.y=300
 
     for i in event.get():
-        if i.type==MOUSEBUTTONDOWN:
-            mouse_x,mouse_y=i.pos
-            if exitt_rect.collidepoint (mouse_x,mouse_y):
-                igrovoi_cikl=False
+        if main_menu_flag:
+            if i.type==MOUSEBUTTONDOWN:
+                mouse_x,mouse_y=i.pos
+                if exitt_rect.collidepoint (mouse_x,mouse_y):
+                    igrovoi_cikl=False
 
-            if play_online_rect.collidepoint (mouse_x,mouse_y):
-                main_menu_flag=False
-                online_game=True
+                if play_online_rect.collidepoint (mouse_x,mouse_y):
+                    main_menu_flag=False
+                    online_game=True
 
-            if play_solo_rect.collidepoint (mouse_x,mouse_y):
-                main_menu_flag=False
-                ofline_game=True
+                if play_solo_rect.collidepoint (mouse_x,mouse_y):
+                    main_menu_flag=False
+                    ofline_game=True
+        if is_end_game:  
+            if i.type==MOUSEBUTTONDOWN:
+                mouse_x,mouse_y=i.pos
+                if play_a_game_rect.collidepoint(mouse_x,mouse_y):
+                    is_end_game=False
+                    ofline_game=True
+                 
+                if back_main_menu_rect.collidepoint(mouse_x,mouse_y):
+                    is_end_game=False
+                    ofline_game=False
+                    main_menu_flag=True
+            points['point1']=0
+            points['point2']=0
+            rocketka_number_one.rect.y=285
+            rocketka_number_two.rect.y=285            
+            ball.rect.x=605
+            ball.rect.y=325
         if i.type==QUIT:
             igrovoi_cikl = False
             
